@@ -151,6 +151,7 @@ var mergeCss = Profile("mergeCss", function (css) {
     concatConsumer.eachMapping(function (mapping) {
       var source = mapping.source;
       var consumer = consumers[source];
+      var mappingExists = true;
 
       var original = {
         line: mapping.originalLine,
@@ -164,30 +165,31 @@ var mergeCss = Profile("mergeCss", function (css) {
       if (consumer) {
         var newOriginal = consumer.originalPositionFor(original);
 
-        // Finding the original position should always be possible (otherwise,
-        // one of the source maps would have incorrect mappings). However, in
-        // case there is something wrong, use the intermediate mapping.
         if (newOriginal.source !== null) {
           original = newOriginal;
           source = original.source;
+        } else {
+          mappingExists = false;
         }
       }
 
-      // Add a new mapping to the final source map
-      newMap.addMapping({
-        generated: {
-          line: mapping.generatedLine,
-          column: mapping.generatedColumn
-        },
-        original: original,
-        source: source
-      });
+      // Add a new mapping to the final source map if one exists
+      if (mappingExists) {
+        newMap.addMapping({
+          generated: {
+            line: mapping.generatedLine,
+            column: mapping.generatedColumn
+          },
+          original: original,
+          source: source
+        });
 
-      // Set the correct content for the mapping's source
-      newMap.setSourceContent(
-        source,
-        (consumer || concatConsumer).sourceContentFor(source)
-      );
+        // Set the correct content for the mapping's source
+        newMap.setSourceContent(
+          source,
+          (consumer || concatConsumer).sourceContentFor(source)
+        );
+      }
     });
   });
 
