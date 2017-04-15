@@ -190,18 +190,20 @@ var loadServerBundles = Profile("Load server bundles", function () {
         try {
           return require(name);
         } catch (e) {
-          // Try to guess the package name so we can print a nice
-          // error message
-          // fileInfo.path is a standard path, use files.pathSep
-          var filePathParts = fileInfo.path.split(files.pathSep);
-          var packageName = filePathParts[1].replace(/\.js$/, '');
+          var message;
 
-          // XXX better message
-          throw new Error(
-            "Can't find npm module '" + name +
-              "'. Did you forget to call 'Npm.depends' in package.js " +
-              "within the '" + packageName + "' package?");
+          // Check whether the missing module is a Meteor package.
+          if (name.startsWith('meteor/')) {
+            var packageName = name.substring(7); // Remove "meteor/" prefix
+
+            message = `Cannot find Meteor package ${packageName}.`
+              + ` Consider running: \n\n  meteor add ${packageName}\n`;
+          } else {
+            message = `Cannot find npm module ${name}`;
           }
+
+          throw new Error(message);
+        }
       })
     };
     var getAsset = function (assetPath, encoding, callback) {
