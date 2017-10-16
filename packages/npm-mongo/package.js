@@ -8,7 +8,8 @@ Package.describe({
 });
 
 Npm.depends({
-  mongodb: "2.2.33"
+  // Use the 3.0.0 branch of `node-mongodb-native`.
+  mongodb: "git://github.com/mongodb/node-mongodb-native.git#b0b04ae7870ccfca1db5b92702467662353222e2"
 });
 
 Package.onUse(function (api) {

@@ -169,10 +169,12 @@ MongoConnection = function (url, options) {
     url,
     mongoOptions,
     Meteor.bindEnvironment(
-      function (err, db) {
+      function (err, client) {
         if (err) {
           throw err;
         }
+
+        var db = client.db(client.s.options.dbName);
 
         // First, figure out what the current primary is, if any.
         if (db.serverConfig.isMasterDoc) {
@@ -1004,7 +1006,7 @@ var SynchronousCursor = function (dbCursor, cursorDescription, options) {
   // since otherwise when we try to call it with no args the driver will
   // interpret "undefined" first arg as an options hash and crash.
   self._synchronousNextObject = Future.wrap(
-    dbCursor.nextObject.bind(dbCursor), 0);
+    dbCursor.next.bind(dbCursor), 0);
   self._synchronousCount = Future.wrap(dbCursor.count.bind(dbCursor));
   self._visitedIds = new LocalCollection._IdMap;
 };
