@@ -72,6 +72,9 @@ Package.onUse(function (api) {
                  'observe_multiplex.js', 'doc_fetcher.js',
                  'polling_observe_driver.js','oplog_observe_driver.js'],
                 'server');
+
+                api.addFiles('change_stream_observe_driver.js', 'server');
+
   api.addFiles('local_collection_driver.js', ['client', 'server']);
   api.addFiles('remote_collection_driver.js', 'server');
   api.addFiles('collection.js', ['client', 'server']);
